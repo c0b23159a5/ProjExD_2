@@ -29,6 +29,26 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 
+def create_koukaton_images(base_img):
+    """
+    方向に応じたこうかとんの画像辞書を作成する。
+    引数:
+        base_img: こうかとんの元画像
+    戻り値:
+        辞書: {移動量タプル: Surface}
+    """
+    directions = {
+        (0, -5): pg.transform.rotozoom(base_img, 0, 1.0),   # 上
+        (0, +5): pg.transform.rotozoom(base_img, 180, 1.0), # 下
+        (-5, 0): pg.transform.rotozoom(base_img, 90, 1.0),  # 左
+        (+5, 0): pg.transform.rotozoom(base_img, -90, 1.0), # 右
+        (-5, -5): pg.transform.rotozoom(base_img, 45, 1.0), # 左上
+        (-5, +5): pg.transform.rotozoom(base_img, 135, 1.0),# 左下
+        (+5, -5): pg.transform.rotozoom(base_img, -45, 1.0),# 右上
+        (+5, +5): pg.transform.rotozoom(base_img, -135, 1.0)# 右下
+    }
+    return directions
+
 def create_bombs():
     """
     爆弾の加速リストとサイズリストを作成し、タプルで返す専用の関数。
@@ -47,13 +67,22 @@ def create_bombs():
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
-    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
-    kk_rct = kk_img.get_rect()
-    kk_rct.center = 300, 200
+    bg_img = pg.image.load("fig/pg_bg.jpg")
+    #関数に読み込むため、書き方を修正コメントアウト
+    # kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    # kk_rct = kk_img.get_rect()
+    # kk_rct.center = 300, 200
+    kk_img = pg.image.load("fig/3.png")
     # 爆弾リスト生成
     accs, bb_imgs = create_bombs()
     bb_rct = bb_imgs[0].get_rect()
+    # 方向画像辞書
+    koukaton_imgs = create_koukaton_images(kk_img)
+    # 初期位置の設定（デフォルト設定）
+    kk_img = koukaton_imgs[(0, -5)]  # 初期は上向き
+    kk_rct = kk_img.get_rect()
+    kk_rct.center = 300, 200
+
     #もともとのやり方(関数で利用してコメントアウト)
     # bb_img = pg.Surface((20, 20))  # 爆弾用の空Surface
     # pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 爆弾円を描く
@@ -104,6 +133,9 @@ def main():
             if key_lst[key] == True:
                 sum_mv[0] += tpl[0]
                 sum_mv[1] += tpl[1]
+
+        if sum_mv != [0, 0]:  # こうかとんが動いている場合のみ向きを変更
+            kk_img = koukaton_imgs.get(tuple(sum_mv), kk_img)  # 移動量に対応する画像を取得
         kk_rct.move_ip(sum_mv)
         # こうかとんが画面外なら，元の場所に戻す
         if check_bound(kk_rct) != (True, True):
@@ -118,7 +150,7 @@ def main():
         avx = vx * accs[idx]
         avy = vy * accs[idx]
         #speed changed check
-        print(avx,avy)
+        # print(avx,avy)
         # 爆弾移動
         bb_rct.move_ip(avx, avy)
 
