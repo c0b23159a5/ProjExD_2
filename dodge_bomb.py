@@ -1,7 +1,7 @@
 import os
 import random
 import sys
-
+import time
 import pygame as pg
 
 
@@ -51,7 +51,32 @@ def main():
                 return
         if kk_rct.colliderect(bb_rct):
             print("ゲームオーバー")
-            return  # ゲームオーバー
+
+            # 背景を暗くする
+            gameover_background = pg.Surface((WIDTH, HEIGHT))
+            gameover_background.set_alpha(128)  # 半透明
+            gameover_background.fill((0, 0, 0))  # 黒色
+            screen.blit(gameover_background, (0, 0))
+
+            # ゲームオーバー時の画像描画
+            kk_gameover_img_left = pg.image.load("fig/8.png")
+            kk_gameover_rct_lft = kk_gameover_img_left.get_rect(center=(WIDTH // 2 -200 , HEIGHT // 2 -50))  # 中央に配置
+            screen.blit(kk_gameover_img_left, kk_gameover_rct_lft.topleft)
+
+            # "Game Over" テキストの描画
+            fonto = pg.font.Font(None, 80)
+            txt = fonto.render("Game Over", True, (255, 255, 255))
+            text_rect = txt.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))  # テキストを中央に配置
+            screen.blit(txt, text_rect.topleft)
+
+            # ゲームオーバー時の画像描画
+            kk_gameover_img = pg.image.load("fig/8.png")
+            kk_gameover_rct = kk_gameover_img.get_rect(center=(WIDTH // 2 +200 , HEIGHT // 2-50 ))  # 中央に配置
+            screen.blit(kk_gameover_img, kk_gameover_rct.topleft)
+
+            pg.display.update()
+            time.sleep(5)  # 5秒間表示
+            return  # ゲームオーバー終了
         screen.blit(bg_img, [0, 0]) 
 
         key_lst = pg.key.get_pressed()
