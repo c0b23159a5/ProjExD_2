@@ -29,6 +29,21 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 
+def create_bombs():
+    """
+    爆弾の加速リストとサイズリストを作成し、タプルで返す専用の関数。
+    """
+    accs = [kasoku for kasoku in range(1, 11)]  # 加速リスト
+    print(accs)
+    bb_imgs = []  # サイズリスト
+    for r in range(1, 11):
+        bb_img = pg.Surface((20 * r, 20 * r), pg.SRCALPHA)  # Surfaceの透明化
+        pg.draw.circle(bb_img, (255, 0, 0), (10 * r, 10 * r), 10 * r)  # 爆弾円を描く
+        bb_imgs.append(bb_img)
+    return accs, bb_imgs
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -36,10 +51,14 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20, 20))  # 爆弾用の空Surface
-    pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 爆弾円を描く
-    bb_img.set_colorkey((0, 0, 0))  # 四隅の黒を透過させる
-    bb_rct = bb_img.get_rect()  # 爆弾Rectの抽出
+    # 爆弾リスト生成
+    accs, bb_imgs = create_bombs()
+    bb_rct = bb_imgs[0].get_rect()
+    #もともとのやり方(関数で利用してコメントアウト)
+    # bb_img = pg.Surface((20, 20))  # 爆弾用の空Surface
+    # pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 爆弾円を描く
+    # bb_img.set_colorkey((0, 0, 0))  # 四隅の黒を透過させる
+    # bb_rct = bb_img.get_rect()  # 爆弾Rectの抽出
     bb_rct.centerx = random.randint(0, WIDTH)
     bb_rct.centery = random.randint(0, HEIGHT)
     vx, vy = +5, +5  # 爆弾速度ベクトル
@@ -78,7 +97,7 @@ def main():
             time.sleep(5)  # 5秒間表示
             return  # ゲームオーバー終了
         screen.blit(bg_img, [0, 0]) 
-
+        
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for key, tpl in DELTA.items():
@@ -90,7 +109,20 @@ def main():
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx, vy)  # 爆弾動く
+
+        # ここで爆弾の設定
+        # 爆弾の拡大・加速
+        # avx = vx * accs[min(tmr // 500, 9)]tmrの値に応じて，リストから適切な要素を選択
+        idx = min(tmr // 500, 9)  # 最大値はリストの長さ - 1
+        bb_img = bb_imgs[idx]
+        avx = vx * accs[idx]
+        avy = vy * accs[idx]
+        #speed changed check
+        print(avx,avy)
+        # 爆弾移動
+        bb_rct.move_ip(avx, avy)
+
+        # bb_rct.move_ip(vx, vy)  # 爆弾動く
         yoko, tate = check_bound(bb_rct)
         if not yoko:  # 横にはみ出てる
             vx *= -1
