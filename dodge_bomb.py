@@ -64,7 +64,6 @@ def create_bombs():
     return accs, bb_imgs
 
 
-
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
