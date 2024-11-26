@@ -14,6 +14,8 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+    bb_img = pg.Surface((20,20))
+    pg.draw.circle(bb_img,(255,0,0))
     clock = pg.time.Clock()
     tmr = 0
     while True:
