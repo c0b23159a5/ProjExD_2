@@ -15,7 +15,9 @@ def main():
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     bb_img = pg.Surface((20,20))
-    pg.draw.circle(bb_img,(255,0,0))
+    pg.draw.circle(bb_img,(255,0,0),(10,10),10)#爆弾円
+    bb_rct = kk_img.get_rect()
+
     clock = pg.time.Clock()
     tmr = 0
     while True:
