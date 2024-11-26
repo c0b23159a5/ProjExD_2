@@ -49,6 +49,7 @@ def create_koukaton_images(base_img):
     }
     return directions
 
+
 def create_bombs():
     """
     爆弾の加速リストとサイズリストを作成し、タプルで返す専用の関数。
