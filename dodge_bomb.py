@@ -1,7 +1,7 @@
 import os
 import sys
 import pygame as pg
-
+import random
 
 WIDTH, HEIGHT = 1600, 900
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -17,7 +17,7 @@ def main():
     bb_img = pg.Surface((20,20))
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)#爆弾円
     bb_rct = kk_img.get_rect()
-
+    bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
     clock = pg.time.Clock()
     tmr = 0
     while True:
